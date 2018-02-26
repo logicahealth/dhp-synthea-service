@@ -2,24 +2,19 @@ package com.digitalservices.dhp.dhpsyntheaservice.domain;
 
 public class PatientFile {
 
-    private String name;
+    private String patientName;
     private String url;
-    private String file;
+    private String fileName;
 
-    public String getName() {
-        return name;
+    public PatientFile() {
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getPatientName() {
+        return patientName;
     }
 
-    public String getFile() {
-        return file;
-    }
-
-    public void setFile(String file) {
-        this.file = file;
+    public void setPatientName(String patientName) {
+        this.patientName = patientName;
     }
 
     public String getUrl() {
@@ -28,5 +23,13 @@ public class PatientFile {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

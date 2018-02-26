@@ -1,4 +1,4 @@
-FROM org.mitre/synthea:latest
+FROM synthea:0
 VOLUME /tmp
 ARG JAR_FILE
 ADD ${JAR_FILE} app.jar

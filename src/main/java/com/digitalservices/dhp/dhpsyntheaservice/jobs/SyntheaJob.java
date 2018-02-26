@@ -5,6 +5,7 @@ import com.digitalservices.dhp.dhpsyntheaservice.data.Processes;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.io.File;
@@ -13,14 +14,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.stream.Stream;
+
 
 public class SyntheaJob extends QuartzJobBean {
     private String command = "/bin/sh";
     private String arg1 = "run_synthea";
     private String arg2 = "-p";
-    private String dir = "/Users/robertcaruso/Projects/DHP/synthea/";
-    private String outputDir = dir + "output";
+    @Value("${synthea.root}")
+    private String dir;
+    @Value("${synthea.root.output}")
+    private String outputDir;
     private String population;
 
     @Autowired
@@ -51,12 +54,14 @@ public class SyntheaJob extends QuartzJobBean {
     }
     private void deleteFiles(){
         Path path = Paths.get(outputDir);
-
-        try {
-            Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach
-                    (File::delete);
-        } catch (IOException e) {
-            e.printStackTrace();
+        System.out.println("deleted directory " + outputDir);
+        if (Files.exists(path)) {
+            try {
+                Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach
+                        (File::delete);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     public void setPopulation(String population) {

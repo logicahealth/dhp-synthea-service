@@ -37,6 +37,9 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-rest')
 	compile('org.springframework.boot:spring-boot-starter-quartz')
 	compile('org.springframework.boot:spring-boot-starter-web')
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'ca.uhn.hapi.fhir:hapi-fhir-base:3.1.0'
+    compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.1.0'
 
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('com.h2database:h2')
