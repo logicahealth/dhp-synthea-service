@@ -17,8 +17,11 @@ import java.util.Comparator;
 
 
 public class SyntheaJob extends QuartzJobBean {
-    private String command = "/bin/sh";
+    @Value("${synthea.shell}")
+    private String command;
+    @Value("${synthea.arg1}")
     private String arg1 = "run_synthea";
+    @Value("${synthea.arg2}")
     private String arg2 = "-p";
     @Value("${synthea.root}")
     private String dir;

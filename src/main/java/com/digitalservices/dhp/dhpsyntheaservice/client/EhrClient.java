@@ -65,7 +65,7 @@ public class EhrClient {
         String contents = new String(Files.readAllBytes(path));
         params.put("id", file.getName().replace(" ", "_"));
         ResponseEntity<VistaResponse> response = restTemplate.postForEntity(vistaUrl, contents, VistaResponse.class, params);
-
+        System.out.println(response.getBody().getIcn());
         return response;
 
     }
