@@ -31,6 +31,7 @@ repositories {
 	maven { url "https://repo.spring.io/milestone" }
 }
 
+def simonVersion = '4.1.0'
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
@@ -40,14 +41,10 @@ dependencies {
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'ca.uhn.hapi.fhir:hapi-fhir-base:3.1.0'
     compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.1.0'
+    compile group: 'org.javasimon', name: 'javasimon-core',  version: simonVersion
+    compile group: 'org.javasimon', name: 'javasimon-console-embed',  version: simonVersion
 
 	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('com.h2database:h2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
-}
-
-docker {
-    name "${project.group}/${jar.baseName}"
-    files jar.archivePath
-    buildArgs(['JAR_FILE': "${jar.archiveName}"])
 }
