@@ -64,8 +64,10 @@ public class EhrClient {
         Map<String, String> params = new HashMap<>();
         String contents = new String(Files.readAllBytes(path));
         params.put("id", file.getName().replace(" ", "_"));
+        System.out.println("sending to " + vistaUrl);
         ResponseEntity<VistaResponse> response = restTemplate.postForEntity(vistaUrl, contents, VistaResponse.class, params);
         System.out.println(response.getBody().getIcn());
+        System.out.println(response.getStatusCode());
         return response;
 
     }
@@ -73,6 +75,7 @@ public class EhrClient {
     private void ohcClient(String id){
         RestTemplate restTemplate = new RestTemplate();
         String url = ohcUrl + "?id=" + id;
+        System.out.println("sending to " + url);
         ResponseEntity<String> response = restTemplate.getForEntity(url,  String.class);
         System.out.println(response.getStatusCode());
         System.out.println(response.getBody());
