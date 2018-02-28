@@ -62,7 +62,7 @@ public class EhrClient {
             voResponse.setVistaSuccess(true);
             ResponseEntity<String> ohcResponse = ohcClient(response.getBody().getIcn());
             if (ohcResponse.getBody().startsWith("Successful")) {
-                voResponse.setVistaSuccess(true);
+                voResponse.setOhcSuccess(true);
             } else {
                 voResponse.setError(ohcResponse.getBody());
             }
