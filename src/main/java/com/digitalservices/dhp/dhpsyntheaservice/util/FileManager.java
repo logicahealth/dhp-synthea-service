@@ -89,8 +89,12 @@ public class FileManager {
         List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
         for (Bundle.BundleEntryComponent entry : entries) {
             if (Enumerations.FHIRAllTypes.PATIENT.getDisplay().equals(entry.getResource().fhirType())) {
+                Patient patient = (Patient) entry.getResource();
+                if (patient.hasDeceased()){
+                    return new Patient();
+                }
+                return patient;
 
-                return (Patient) entry.getResource();
             }
         }
 

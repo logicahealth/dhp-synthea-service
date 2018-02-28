@@ -29,8 +29,8 @@ public class EhrClient {
 
     //@Autowired RestTemplate resetTemplate;
 
-    public VistaResponse sendAllToVista() throws Exception {
-
+    public VistaOhcResponse sendAllToVista() throws Exception {
+        VistaOhcResponse voResponse = new VistaOhcResponse();
         Path path = FileSystems.getDefault().getPath(fhirDir);
         ResponseEntity<VistaResponse> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
@@ -38,13 +38,13 @@ public class EhrClient {
                 if (entry.toFile().getName().contains("hospital")) {
                     continue;
                 }
-                sendToVista(entry);
+                voResponse = sendToVista(entry);
             }
         } catch (DirectoryIteratorException ex) {
             // I/O error encountered during the iteration, the cause is an IOException
             throw ex.getCause();
         }
-        return response.getBody();
+        return voResponse;
     }
 
     public VistaOhcResponse sendOneToVista(String fileName) throws Exception {
@@ -61,6 +61,11 @@ public class EhrClient {
             voResponse.setICN(response.getBody().getIcn());
             voResponse.setVistaSuccess(true);
             ResponseEntity<String> ohcResponse = ohcClient(response.getBody().getIcn());
+            if (ohcResponse.getBody().startsWith("Successful")) {
+                voResponse.setVistaSuccess(true);
+            } else {
+                voResponse.setError(ohcResponse.getBody());
+            }
 
         } else {
             voResponse.setVistaSuccess(false);
