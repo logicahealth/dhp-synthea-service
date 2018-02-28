@@ -1,5 +1,6 @@
 package com.digitalservices.dhp.dhpsyntheaservice.client;
 
+import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import java.io.File;
 import java.nio.file.*;
 import java.util.HashMap;
 import java.util.Map;
+
 @Component
 public class EhrClient {
 
@@ -33,14 +35,10 @@ public class EhrClient {
         ResponseEntity<VistaResponse> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
-                if (entry.toFile().getName().contains("hospital")){
+                if (entry.toFile().getName().contains("hospital")) {
                     continue;
                 }
-                response = vistaClient(entry);
-                if(response.getStatusCode().equals(HttpStatus.OK)){
-                    System.out.println(response.getBody().getId());
-                    ohcClient(response.getBody().getIcn());
-                }
+                sendToVista(entry);
             }
         } catch (DirectoryIteratorException ex) {
             // I/O error encountered during the iteration, the cause is an IOException
@@ -48,16 +46,30 @@ public class EhrClient {
         }
         return response.getBody();
     }
-    public VistaResponse sendOneToVista(String fileName) throws Exception {
-        Path path = FileSystems.getDefault().getPath(fhirDir + "/" + fileName);
-        ResponseEntity<VistaResponse> response = vistaClient(path);
-        if(response.getStatusCode().equals(HttpStatus.OK)){
 
-            ohcClient(response.getBody().getIcn());
+    public VistaOhcResponse sendOneToVista(String fileName) throws Exception {
+        Path path = FileSystems.getDefault().getPath(fhirDir + "/" + fileName);
+        return sendToVista(path);
+    }
+
+    public VistaOhcResponse sendToVista(Path path) throws Exception {
+
+        VistaOhcResponse voResponse = new VistaOhcResponse();
+        ResponseEntity<VistaResponse> response = vistaClient(path);
+
+        if (!response.getStatusCode().isError() && response.getBody().getLoadStatus().equalsIgnoreCase("loaded")) {
+            voResponse.setICN(response.getBody().getIcn());
+            voResponse.setVistaSuccess(true);
+            ResponseEntity<String> ohcResponse = ohcClient(response.getBody().getIcn());
+
+        } else {
+            voResponse.setVistaSuccess(false);
+            //voResponse.setError(response.getBody().);
         }
-        return response.getBody();
+        return voResponse;
 
     }
+
     private ResponseEntity<VistaResponse> vistaClient(Path path) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         File file = path.toFile();
@@ -72,13 +84,14 @@ public class EhrClient {
 
     }
 
-    private void ohcClient(String id){
+    private ResponseEntity<String> ohcClient(String id) {
         RestTemplate restTemplate = new RestTemplate();
         String url = ohcUrl + "?id=" + id;
         System.out.println("sending to " + url);
-        ResponseEntity<String> response = restTemplate.getForEntity(url,  String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         System.out.println(response.getStatusCode());
         System.out.println(response.getBody());
+        return response;
     }
 
 }

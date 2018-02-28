@@ -4,6 +4,7 @@ import com.digitalservices.dhp.dhpsyntheaservice.client.EhrClient;
 import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
 import com.digitalservices.dhp.dhpsyntheaservice.data.Processes;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.PatientFile;
+import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.util.FileManager;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -12,10 +13,7 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -24,6 +22,7 @@ import java.util.List;
 
 
 @RestController
+@CrossOrigin(origins = "*.*")
 @RequestMapping("synthea")
 public class SyntheaController {
 
@@ -77,11 +76,12 @@ public class SyntheaController {
     }
 
     @RequestMapping(value = "/processPatientFiles", method = RequestMethod.GET)
-    public ResponseEntity<String> processPatientFiles(@RequestParam(value = "fileName", required = false) String fileName) {
-
+    public ResponseEntity<VistaOhcResponse> processPatientFiles(@RequestParam(value = "fileName", required = false) String
+                                                               fileName) {
+        VistaOhcResponse response = new VistaOhcResponse();
         if (fileName != null) {
             try {
-                ehrClient.sendOneToVista(fileName);
+               response =  ehrClient.sendOneToVista(fileName);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -95,7 +95,7 @@ public class SyntheaController {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -112,6 +112,8 @@ public class SyntheaController {
     }
 
     protected String assembleUrl(HttpServletRequest request){
+        System.out.println(request.getRequestURI());
+        System.out.println(request.getRequestURL());
         String baseURl = request.getScheme() + "://"+  request.getServerName() + ":"+ request.getServerPort();
         baseURl = baseURl + "/synthea/patient?fileName=";
                 return baseURl;
