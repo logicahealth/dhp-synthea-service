@@ -12,6 +12,7 @@ public class Processes {
     private Long id;
 
     private boolean isRunning;
+    private String client;
 
     public Processes() {
 
@@ -27,5 +28,13 @@ public class Processes {
 
     public void setRunning(boolean running) {
         isRunning = running;
+    }
+
+    public String getClient() {
+        return client;
+    }
+
+    public void setClient(String client) {
+        this.client = client;
     }
 }

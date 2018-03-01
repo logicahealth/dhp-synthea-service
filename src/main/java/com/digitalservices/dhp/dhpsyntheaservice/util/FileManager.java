@@ -13,37 +13,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class FileManager {
-    @Value("${synthea.root.output.fhir}")
-    private String syntheaPath;
+    @Value("${synthea.root.output}")
+    private String syntheaOutput;
 
-    public File getFileByName(String fileName) {
-        File file = new File(syntheaPath + "/" + fileName);
+    public File getFileByName(String userDir, String fileName) {
+        File file = new File(syntheaOutput + "/" + userDir + "/" + fileName);
         return file;
     }
 
-    public String getStringFromFile(String fileName) throws IOException {
-        String contents = new String(Files.readAllBytes(Paths.get(syntheaPath + "/" + fileName)));
-
+    public String getStringFromFile(String userDir, String fileName) throws IOException {
+        String contents = new String(Files.readAllBytes(Paths.get(syntheaOutput + "/" + userDir + "/" + fileName)));
         return contents;
     }
 
-    public Bundle getPatient(String fileName) {
-        File file = getFileByName(fileName);
+    public Bundle getPatient(String userDir, String fileName) {
+        File file = getFileByName(userDir, fileName);
         return fileToBundle(file);
     }
 
-    public List<PatientFile> getAllPatientFiles(String baseURl) {
+    public List<PatientFile> getAllPatientFiles(String baseURl, String userDir) {
         List<PatientFile> patientFiles = new ArrayList<>();
 
-        System.out.println("path=========" + syntheaPath);
-        Path path = FileSystems.getDefault().getPath(syntheaPath);
+        System.out.println("path=========" + syntheaOutput + "/" + userDir);
+        Path path = FileSystems.getDefault().getPath(syntheaOutput);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
                 File file = entry.toFile();

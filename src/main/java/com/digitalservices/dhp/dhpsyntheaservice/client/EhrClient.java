@@ -17,8 +17,8 @@ import java.util.Map;
 public class EhrClient {
 
 
-    @Value("${synthea.root.output.fhir}")
-    private String fhirDir;
+    @Value("${synthea.root.output}")
+    private String syntheaOutput;
 
 
     @Value("${vista.url}")
@@ -29,10 +29,10 @@ public class EhrClient {
 
     //@Autowired RestTemplate resetTemplate;
 
-    public VistaOhcResponse sendAllToVista() throws Exception {
+    public VistaOhcResponse sendAllToVista(String userDir) throws Exception {
         VistaOhcResponse voResponse = new VistaOhcResponse();
-        Path path = FileSystems.getDefault().getPath(fhirDir);
-        ResponseEntity<VistaResponse> response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Path path = FileSystems.getDefault().getPath(syntheaOutput + "/" + userDir);
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
                 if (entry.toFile().getName().contains("hospital")) {
@@ -47,8 +47,8 @@ public class EhrClient {
         return voResponse;
     }
 
-    public VistaOhcResponse sendOneToVista(String fileName) throws Exception {
-        Path path = FileSystems.getDefault().getPath(fhirDir + "/" + fileName);
+    public VistaOhcResponse sendOneToVista(String userDir, String fileName) throws Exception {
+        Path path = FileSystems.getDefault().getPath(syntheaOutput + "/" + userDir + "/" + fileName);
         return sendToVista(path);
     }
 
