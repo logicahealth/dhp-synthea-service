@@ -81,7 +81,8 @@ public class SyntheaController {
     }
 
     @RequestMapping("/checkProcess")
-    public Processes checkProcess() {
+    public Processes checkProcess(HttpServletRequest request) {
+        System.out.println(request.getSession().getId());
         Iterable<Processes> processes = processRepository.findAll();
         if (processes.iterator().hasNext()) {
             return processes.iterator().next();
