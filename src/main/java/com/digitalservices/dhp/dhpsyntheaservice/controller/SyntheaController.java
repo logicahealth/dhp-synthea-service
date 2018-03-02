@@ -26,7 +26,6 @@ import java.util.List;
 
 
 @RestController
-@CrossOrigin(origins = "*.*")
 @RequestMapping("synthea")
 public class SyntheaController {
 
