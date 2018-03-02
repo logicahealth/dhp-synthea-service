@@ -17,7 +17,7 @@ import java.util.Map;
 public class EhrClient {
 
 
-    @Value("${synthea.root.output}")
+    @Value("${synthea.root.output.fhir}")
     private String syntheaOutput;
 
 
@@ -29,9 +29,9 @@ public class EhrClient {
 
     //@Autowired RestTemplate resetTemplate;
 
-    public VistaOhcResponse sendAllToVista(String userDir) throws Exception {
+    public VistaOhcResponse sendAllToVista() throws Exception {
         VistaOhcResponse voResponse = new VistaOhcResponse();
-        Path path = FileSystems.getDefault().getPath(syntheaOutput + "/" + userDir);
+        Path path = FileSystems.getDefault().getPath(syntheaOutput);
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
@@ -47,8 +47,8 @@ public class EhrClient {
         return voResponse;
     }
 
-    public VistaOhcResponse sendOneToVista(String userDir, String fileName) throws Exception {
-        Path path = FileSystems.getDefault().getPath(syntheaOutput + "/" + userDir + "/" + fileName);
+    public VistaOhcResponse sendOneToVista(String fileName) throws Exception {
+        Path path = FileSystems.getDefault().getPath(syntheaOutput + "/" + fileName);
         return sendToVista(path);
     }
 

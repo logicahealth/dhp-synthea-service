@@ -21,27 +21,29 @@ import java.util.List;
 public class FileManager {
     @Value("${synthea.root.output}")
     private String syntheaOutput;
+    @Value("${synthea.root.output.fhir}")
+    private String syntheaOutputFhir;
 
-    public File getFileByName(String userDir, String fileName) {
-        File file = new File(syntheaOutput + "/" + userDir + "/" + fileName);
+    public File getFileByName(String fileName) {
+        File file = new File(syntheaOutputFhir  + "/" + fileName);
         return file;
     }
 
-    public String getStringFromFile(String userDir, String fileName) throws IOException {
-        String contents = new String(Files.readAllBytes(Paths.get(syntheaOutput + "/" + userDir + "/" + fileName)));
+    public String getStringFromFile(String fileName) throws IOException {
+        String contents = new String(Files.readAllBytes(Paths.get(syntheaOutputFhir + "/" + fileName)));
         return contents;
     }
 
-    public Bundle getPatient(String userDir, String fileName) {
-        File file = getFileByName(userDir, fileName);
+    public Bundle getPatient(String fileName) {
+        File file = getFileByName(fileName);
         return fileToBundle(file);
     }
 
-    public List<PatientFile> getAllPatientFiles(String baseURl, String userDir) {
+    public List<PatientFile> getAllPatientFiles(String baseURl) {
         List<PatientFile> patientFiles = new ArrayList<>();
 
-        System.out.println("path=========" + syntheaOutput + "/" + userDir);
-        Path path = FileSystems.getDefault().getPath(syntheaOutput);
+        System.out.println("path=========" + syntheaOutput);
+        Path path = FileSystems.getDefault().getPath(syntheaOutputFhir);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
                 File file = entry.toFile();

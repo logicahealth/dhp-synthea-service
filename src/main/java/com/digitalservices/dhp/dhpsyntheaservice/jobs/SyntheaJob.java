@@ -29,7 +29,7 @@ public class SyntheaJob extends QuartzJobBean {
     @Value("${synthea.root.output.fhir}")
     private String syntheaOutputFhir;
 
-    private String userDir;
+
     private String population;
 
     @Autowired
@@ -45,12 +45,12 @@ public class SyntheaJob extends QuartzJobBean {
         try {
             Processes processes = new Processes();
             processes.setRunning(true);
-            processes.setClient(userDir);
+            //processes.setClient(userDir);
             processRepository.save(processes);
             Process process = processBuilder.start();
 
             process.waitFor();
-            moveFiles();
+            //moveFiles();
             processRepository.deleteAll();
         } catch (IOException e) {
             throw new JobExecutionException(e);
@@ -75,11 +75,11 @@ public class SyntheaJob extends QuartzJobBean {
     }
     private void moveFiles(){
         Path path = Paths.get(syntheaOutputFhir);
-        Path newPath = Paths.get(syntheaOutput + "/" + userDir);
+        Path newPath = Paths.get(syntheaOutput );
         deleteFiles(newPath);
         try {
             System.out.println("copying from directory " + syntheaOutputFhir);
-            System.out.println("copying to  directory " + syntheaOutput + "/" + userDir);
+            System.out.println("copying to  directory " + syntheaOutput );
             Files.move(path, newPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +89,7 @@ public class SyntheaJob extends QuartzJobBean {
         this.population = population;
     }
 
-    public void setUserDir(String userDir) {
-        this.userDir = userDir;
-    }
+   // public void setUserDir(String userDir) {
+      //  this.userDir = userDir;
+  //  }
 }

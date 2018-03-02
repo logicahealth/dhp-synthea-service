@@ -47,9 +47,9 @@ public class SyntheaController {
     private EhrClient ehrClient;
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
-    public String create(@RequestParam String population, HttpServletRequest request, HttpServletResponse response) {
+    public String create(@RequestParam String population) {
         //String userDir = handleCookie(request, response);
-        String userDir = request.getSession(true).getId();
+
         Iterable<Processes> processes = processRepository.findAll();
         if (processes.iterator().hasNext()) {
             return "process is already running";
@@ -57,7 +57,7 @@ public class SyntheaController {
         try {
             JobDataMap jobDataMap = new JobDataMap();
             jobDataMap.put("population", population);
-            jobDataMap.put("userDir", userDir);
+
             scheduler.triggerJob(syntheaJobDetail.getKey(), jobDataMap);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -80,8 +80,8 @@ public class SyntheaController {
     }
 
     @RequestMapping("/checkProcess")
-    public Processes checkProcess(HttpServletRequest request) {
-        System.out.println(request.getSession().getId());
+    public Processes checkProcess() {
+
         Iterable<Processes> processes = processRepository.findAll();
         if (processes.iterator().hasNext()) {
             return processes.iterator().next();
@@ -93,19 +93,19 @@ public class SyntheaController {
     @RequestMapping(value = "/patientFiles", method = RequestMethod.GET)
     public List<PatientFile> getPatientFiles(HttpServletRequest request) {
         List<PatientFile> patientFiles = new ArrayList<PatientFile>();
-        Cookie[] cookies = request.getCookies();
 
-        return fileManager.getAllPatientFiles(assembleUrl(request), request.getSession().getId());
+
+        return fileManager.getAllPatientFiles(assembleUrl(request));
 
     }
 
     @RequestMapping(value = "/processPatientFiles", method = RequestMethod.GET)
     public ResponseEntity<VistaOhcResponse> processPatientFiles(@RequestParam(value = "fileName", required = false) String
-                                                                        fileName, HttpSession session) {
+                                                                        fileName) {
         VistaOhcResponse response = new VistaOhcResponse();
         if (fileName != null) {
             try {
-                response = ehrClient.sendOneToVista(session.getId(), fileName);
+                response = ehrClient.sendOneToVista(fileName);
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -113,7 +113,7 @@ public class SyntheaController {
         } else {
 
             try {
-                ehrClient.sendAllToVista(session.getId());
+                ehrClient.sendAllToVista();
             } catch (Exception e) {
                 e.printStackTrace();
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -124,10 +124,10 @@ public class SyntheaController {
 
 
     @RequestMapping(value = "/patient", method = RequestMethod.GET)
-    public ResponseEntity<String> getPatient(@RequestParam("fileName") String fileName, HttpSession session) {
+    public ResponseEntity<String> getPatient(@RequestParam("fileName") String fileName) {
         String file = null;
         try {
-            file = fileManager.getStringFromFile(session.getId(), fileName);
+            file = fileManager.getStringFromFile(fileName);
         } catch (IOException e) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
