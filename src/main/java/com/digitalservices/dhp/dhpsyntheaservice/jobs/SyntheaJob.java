@@ -1,7 +1,8 @@
 package com.digitalservices.dhp.dhpsyntheaservice.jobs;
 
 import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
-import com.digitalservices.dhp.dhpsyntheaservice.data.Processes;
+import com.digitalservices.dhp.dhpsyntheaservice.data.Process;
+import com.digitalservices.dhp.dhpsyntheaservice.domain.ProcessType;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -43,11 +44,11 @@ public class SyntheaJob extends QuartzJobBean {
         Path path = Paths.get(syntheaOutputFhir);
         deleteFiles(path);
         try {
-            Processes processes = new Processes();
+            Process processes = new Process(ProcessType.SYNTHEA);
             processes.setRunning(true);
             //processes.setClient(userDir);
             processRepository.save(processes);
-            Process process = processBuilder.start();
+            java.lang.Process process = processBuilder.start();
 
             process.waitFor();
             //moveFiles();

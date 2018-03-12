@@ -2,7 +2,7 @@ package com.digitalservices.dhp.dhpsyntheaservice.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import com.digitalservices.dhp.dhpsyntheaservice.domain.PatientFile;
+import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -39,8 +39,8 @@ public class FileManager {
         return fileToBundle(file);
     }
 
-    public List<PatientFile> getAllPatientFiles(String baseURl) {
-        List<PatientFile> patientFiles = new ArrayList<>();
+    public List<FileMetaData> getAllPatientFiles(String baseURl) {
+        List<FileMetaData> fileMetaDataList = new ArrayList<>();
 
         System.out.println("path=========" + syntheaOutput);
         Path path = FileSystems.getDefault().getPath(syntheaOutputFhir);
@@ -51,21 +51,21 @@ public class FileManager {
                 if (patient.isEmpty()) {
                     continue;
                 }
-                PatientFile patientFile = new PatientFile();
-                patientFile.setFileName(file.getName());
+                FileMetaData fileMetaData = new FileMetaData();
+                fileMetaData.setFileName(file.getName());
                 String family = patient.getName().get(0).getFamily().toString();
                 String given = patient.getName().get(0).getGiven().get(0).toString();
-                patientFile.setPatientName(given + " " + family);
+                fileMetaData.setPatientName(given + " " + family);
 
-                patientFile.setUrl(baseURl + file.getName());
-                patientFiles.add(patientFile);
+                fileMetaData.setUrl(baseURl + file.getName());
+                fileMetaDataList.add(fileMetaData);
             }
         } catch (DirectoryIteratorException ex) {
             ex.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return patientFiles;
+        return fileMetaDataList;
 
     }
 

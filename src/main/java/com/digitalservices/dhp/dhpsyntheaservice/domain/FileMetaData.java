@@ -1,12 +1,12 @@
 package com.digitalservices.dhp.dhpsyntheaservice.domain;
 
-public class PatientFile {
+public class FileMetaData {
 
     private String patientName;
     private String url;
     private String fileName;
 
-    public PatientFile() {
+    public FileMetaData() {
     }
 
     public String getPatientName() {

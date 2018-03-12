@@ -3,7 +3,6 @@ package com.digitalservices.dhp.dhpsyntheaservice.client;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -60,13 +59,6 @@ public class EhrClient {
         if (!response.getStatusCode().isError() && response.getBody().getLoadStatus().equalsIgnoreCase("loaded")) {
             voResponse.setICN(response.getBody().getIcn());
             voResponse.setVistaSuccess(true);
-            ResponseEntity<String> ohcResponse = ohcClient(response.getBody().getIcn());
-            if (ohcResponse.getBody().startsWith("Successful")) {
-                voResponse.setOhcSuccess(true);
-            } else {
-                voResponse.setError(ohcResponse.getBody());
-            }
-
         } else {
             voResponse.setVistaSuccess(false);
             //voResponse.setError(response.getBody().);
@@ -74,6 +66,7 @@ public class EhrClient {
         return voResponse;
 
     }
+
 
     private ResponseEntity<VistaResponse> vistaClient(Path path) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
@@ -89,14 +82,26 @@ public class EhrClient {
 
     }
 
-    private ResponseEntity<String> ohcClient(String id) {
+    public VistaOhcResponse ohcClient(String id) {
         RestTemplate restTemplate = new RestTemplate();
+        VistaOhcResponse vistaOhcResponse = new VistaOhcResponse();
+        vistaOhcResponse.setICN(id);
+        //HttpComponentsClientHttpRequestFactory rf = (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory();
+        //rf.setReadTimeout(60 * 6000);
+        //rf.setConnectTimeout(60 * 6000);
         String url = ohcUrl + "?id=" + id;
         System.out.println("sending to " + url);
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
         System.out.println(response.getStatusCode());
         System.out.println(response.getBody());
-        return response;
+
+        if (response.getStatusCode().isError()) {
+            vistaOhcResponse.setError(response.getBody());
+
+        } else {
+            vistaOhcResponse.setOhcSuccess(true);
+        }
+        return vistaOhcResponse;
     }
 
 }
