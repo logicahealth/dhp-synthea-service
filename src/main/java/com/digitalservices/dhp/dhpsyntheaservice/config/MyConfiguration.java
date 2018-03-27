@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MyConfiguration {
     @Value("${origins.url}")
-    private String url;
+    private String[] url;
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -17,7 +17,7 @@ public class MyConfiguration {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/synthea/**").allowedOrigins(url)
                         .allowedMethods("GET", "OPTIONS", "POST", "HEAD");
-                System.out.println(url);
+
             }
         };
     }
