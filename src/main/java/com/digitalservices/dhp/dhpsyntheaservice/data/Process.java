@@ -1,12 +1,14 @@
 package com.digitalservices.dhp.dhpsyntheaservice.data;
 
-import com.digitalservices.dhp.dhpsyntheaservice.domain.ProcessType;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Represents the quartz process.  right now there can only be one caller so client is not used.
+ */
 @Entity
 public class Process {
     @Id
@@ -14,8 +16,8 @@ public class Process {
     private Long id;
 
     private boolean isRunning;
+    //not used yet.  will be used to identify the caller
     private String client;
-    private ProcessType processType;
 
     public Process() {
 
@@ -23,10 +25,6 @@ public class Process {
 
     public Process(Long id) {
         this.id = id;
-    }
-
-    public Process(ProcessType processType) {
-        this.processType = processType;
     }
 
     public boolean isRunning() {
@@ -43,13 +41,5 @@ public class Process {
 
     public void setClient(String client) {
         this.client = client;
-    }
-
-    public ProcessType getProcessType() {
-        return processType;
-    }
-
-    public void setProcessType(ProcessType processType) {
-        this.processType = processType;
     }
 }

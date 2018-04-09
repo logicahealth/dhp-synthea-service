@@ -2,7 +2,10 @@ package com.digitalservices.dhp.dhpsyntheaservice.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import com.digitalservices.dhp.dhpsyntheaservice.client.EhrClient;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Patient;
@@ -19,13 +22,15 @@ import java.util.List;
 
 @Component
 public class FileManager {
+    private static final Logger LOG = LogManager.getLogger(FileManager.class);
+
     @Value("${synthea.root.output}")
     private String syntheaOutput;
     @Value("${synthea.root.output.fhir}")
     private String syntheaOutputFhir;
 
     public File getFileByName(String fileName) {
-        File file = new File(syntheaOutputFhir  + "/" + fileName);
+        File file = new File(syntheaOutputFhir + "/" + fileName);
         return file;
     }
 
@@ -34,15 +39,9 @@ public class FileManager {
         return contents;
     }
 
-    public Bundle getPatient(String fileName) {
-        File file = getFileByName(fileName);
-        return fileToBundle(file);
-    }
-
     public List<FileMetaData> getAllPatientFiles(String baseURl) {
         List<FileMetaData> fileMetaDataList = new ArrayList<>();
 
-        System.out.println("path=========" + syntheaOutput);
         Path path = FileSystems.getDefault().getPath(syntheaOutputFhir);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
@@ -53,17 +52,17 @@ public class FileManager {
                 }
                 FileMetaData fileMetaData = new FileMetaData();
                 fileMetaData.setFileName(file.getName());
-                String family = patient.getName().get(0).getFamily().toString();
+                String family = patient.getName().get(0).getFamily();
                 String given = patient.getName().get(0).getGiven().get(0).toString();
+
                 fileMetaData.setPatientName(given + " " + family);
 
-                fileMetaData.setUrl(baseURl + file.getName());
                 fileMetaDataList.add(fileMetaData);
             }
         } catch (DirectoryIteratorException ex) {
-            ex.printStackTrace();
+            LOG.error(ex);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
         return fileMetaDataList;
 
@@ -74,7 +73,7 @@ public class FileManager {
         try {
             fileReader = new FileReader(file);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOG.error(e);
             return new Bundle();
         }
         FhirContext fhirContext = FhirContext.forDstu3();
@@ -90,7 +89,7 @@ public class FileManager {
         for (Bundle.BundleEntryComponent entry : entries) {
             if (Enumerations.FHIRAllTypes.PATIENT.getDisplay().equals(entry.getResource().fhirType())) {
                 Patient patient = (Patient) entry.getResource();
-                if (patient.hasDeceased()){
+                if (patient.hasDeceased()) {
                     return new Patient();
                 }
                 return patient;

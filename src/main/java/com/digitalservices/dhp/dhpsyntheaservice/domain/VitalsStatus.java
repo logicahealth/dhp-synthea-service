@@ -2,6 +2,9 @@ package com.digitalservices.dhp.dhpsyntheaservice.domain;
 
 import java.util.Objects;
 
+/**
+ * Represents the success/failure of the vitals loaded into Vista
+ */
 public class VitalsStatus {
     private String loaded;
 

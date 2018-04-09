@@ -2,6 +2,9 @@ package com.digitalservices.dhp.dhpsyntheaservice.domain;
 
 import java.util.Objects;
 
+/**
+ * The response from Vista ingestion of the FHIR bundle
+ */
 public class VistaResponse {
     private String id;
 

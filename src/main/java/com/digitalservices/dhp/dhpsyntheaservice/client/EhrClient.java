@@ -2,6 +2,8 @@ package com.digitalservices.dhp.dhpsyntheaservice.client;
 
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import java.util.Map;
 @Component
 public class EhrClient {
 
+    private static final Logger LOG = LogManager.getLogger(EhrClient.class);
 
     @Value("${synthea.root.output.fhir}")
     private String syntheaOutput;
@@ -25,8 +28,6 @@ public class EhrClient {
 
     @Value("${ohc.url}")
     private String ohcUrl;
-
-    //@Autowired RestTemplate resetTemplate;
 
     public VistaOhcResponse sendAllToVista() throws Exception {
         VistaOhcResponse voResponse = new VistaOhcResponse();
@@ -40,7 +41,7 @@ public class EhrClient {
                 voResponse = sendToVista(entry);
             }
         } catch (DirectoryIteratorException ex) {
-            // I/O error encountered during the iteration, the cause is an IOException
+            LOG.error("Failed to get files", ex);
             throw ex.getCause();
         }
         return voResponse;
@@ -61,7 +62,7 @@ public class EhrClient {
             voResponse.setVistaSuccess(true);
         } else {
             voResponse.setVistaSuccess(false);
-            //voResponse.setError(response.getBody().);
+
         }
         return voResponse;
 
@@ -74,34 +75,12 @@ public class EhrClient {
         Map<String, String> params = new HashMap<>();
         String contents = new String(Files.readAllBytes(path));
         params.put("id", file.getName().replace(" ", "_"));
-        System.out.println("sending to " + vistaUrl);
+        LOG.info("sending to " + vistaUrl);
         ResponseEntity<VistaResponse> response = restTemplate.postForEntity(vistaUrl, contents, VistaResponse.class, params);
-        System.out.println(response.getBody().getIcn());
-        System.out.println(response.getStatusCode());
+        LOG.info(response.getBody().getIcn());
+        LOG.info(response.getStatusCode());
         return response;
 
-    }
-
-    public VistaOhcResponse ohcClient(String id) {
-        RestTemplate restTemplate = new RestTemplate();
-        VistaOhcResponse vistaOhcResponse = new VistaOhcResponse();
-        vistaOhcResponse.setICN(id);
-        //HttpComponentsClientHttpRequestFactory rf = (HttpComponentsClientHttpRequestFactory) restTemplate.getRequestFactory();
-        //rf.setReadTimeout(60 * 6000);
-        //rf.setConnectTimeout(60 * 6000);
-        String url = ohcUrl + "?id=" + id;
-        System.out.println("sending to " + url);
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
-        System.out.println(response.getStatusCode());
-        System.out.println(response.getBody());
-
-        if (response.getStatusCode().isError()) {
-            vistaOhcResponse.setError(response.getBody());
-
-        } else {
-            vistaOhcResponse.setOhcSuccess(true);
-        }
-        return vistaOhcResponse;
     }
 
 }

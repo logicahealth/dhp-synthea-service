@@ -1,8 +1,11 @@
 package com.digitalservices.dhp.dhpsyntheaservice.jobs;
 
-import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
 import com.digitalservices.dhp.dhpsyntheaservice.data.Process;
-import com.digitalservices.dhp.dhpsyntheaservice.domain.ProcessType;
+import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
+
+import com.digitalservices.dhp.dhpsyntheaservice.util.FileManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -12,11 +15,19 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
+/**
+ *
+ */
 @DisallowConcurrentExecution
 public class SyntheaJob extends QuartzJobBean {
+    private static final Logger LOG = LogManager.getLogger(SyntheaJob.class);
+
     @Value("${synthea.shell}")
     private String command;
     @Value("${synthea.arg1}")
@@ -35,6 +46,7 @@ public class SyntheaJob extends QuartzJobBean {
 
     @Autowired
     private ProcessRepository processRepository;
+
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 
@@ -44,7 +56,7 @@ public class SyntheaJob extends QuartzJobBean {
         Path path = Paths.get(syntheaOutputFhir);
         deleteFiles(path);
         try {
-            Process processes = new Process(ProcessType.SYNTHEA);
+            Process processes = new Process();
             processes.setRunning(true);
             //processes.setClient(userDir);
             processRepository.save(processes);
@@ -56,41 +68,40 @@ public class SyntheaJob extends QuartzJobBean {
         } catch (IOException e) {
             throw new JobExecutionException(e);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOG.error(e);
         } finally {
             processRepository.deleteAll();
         }
-        System.out.println("building population " + population);
+        LOG.info("building population " + population);
     }
-    private void deleteFiles(Path path){
 
-        System.out.println("deleted directory " + syntheaOutputFhir);
+    private void deleteFiles(Path path) {
+
+        LOG.info("deleted directory " + syntheaOutputFhir);
         if (Files.exists(path)) {
             try {
                 Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach
                         (File::delete);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error(e);
             }
         }
     }
-    private void moveFiles(){
+
+    private void moveFiles() {
         Path path = Paths.get(syntheaOutputFhir);
-        Path newPath = Paths.get(syntheaOutput );
+        Path newPath = Paths.get(syntheaOutput);
         deleteFiles(newPath);
         try {
-            System.out.println("copying from directory " + syntheaOutputFhir);
-            System.out.println("copying to  directory " + syntheaOutput );
+            LOG.info("copying from directory " + syntheaOutputFhir);
+            LOG.info("copying to  directory " + syntheaOutput);
             Files.move(path, newPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
+
     public void setPopulation(String population) {
         this.population = population;
     }
-
-   // public void setUserDir(String userDir) {
-      //  this.userDir = userDir;
-  //  }
 }

@@ -4,10 +4,11 @@ import com.digitalservices.dhp.dhpsyntheaservice.client.EhrClient;
 import com.digitalservices.dhp.dhpsyntheaservice.data.Process;
 import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
-import com.digitalservices.dhp.dhpsyntheaservice.domain.ProcessType;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.SyntheaResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.util.FileManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -32,6 +33,7 @@ import java.util.List;
 @RequestMapping("synthea")
 public class SyntheaController {
 
+    private static final Logger LOG = LogManager.getLogger(EhrClient.class);
     private static final String USER_DIR_COOKIE = "USER_DIR_COOKIE";
 
     @Autowired
@@ -50,10 +52,11 @@ public class SyntheaController {
     private EhrClient ehrClient;
 
     /**
-     * This method kicks off the Synthea Quartz job.
+     * Kicks off the Synthea Quartz job.  The job then creates patients and saves the files to the files
+     * system.
      *
      * @param population the number of patient files synthea should create
-     * @return
+     * @return A Json object that tells the caller that the process has started
      */
     @RequestMapping(value = "/synthea-run", method = RequestMethod.GET)
     public ResponseEntity<SyntheaResponse> syntheaRun(@RequestParam String population) {
@@ -68,7 +71,7 @@ public class SyntheaController {
                 scheduler.triggerJob(syntheaJobDetail.getKey(), jobDataMap);
                 syntheaResponse = new SyntheaResponse(true);
             } catch (SchedulerException e) {
-                e.printStackTrace();
+                LOG.error("Error running quartz job", e);
                 responseEntity = new ResponseEntity<SyntheaResponse>(HttpStatus.INTERNAL_SERVER_ERROR);
                 return responseEntity;
 
@@ -76,6 +79,82 @@ public class SyntheaController {
         }
         responseEntity = new ResponseEntity<SyntheaResponse>(syntheaResponse, HttpStatus.OK);
         return responseEntity;
+    }
+
+
+    /**
+     * Called by the caller to check on the progress of the synthea job that was created.
+     *
+     * @return a Json object that tells the caller if the job is running
+     */
+    @RequestMapping(value = "/synthea-progress", method = RequestMethod.GET)
+    public Process syntheaProgress() {
+        Process process = new Process();
+        Iterable<Process> processes = processRepository.findAll();
+        if (processes.iterator().hasNext()) {
+            return processes.iterator().next();
+        } else {
+            return new Process();
+        }
+    }
+
+    /**
+     * Returns information about the files created by Synthea. So that he individual files can be
+     * retrieved by the caller.
+     *
+     * @param request the HttpServletRequest
+     * @return a list of metadata about the files
+     */
+    @RequestMapping(value = "/patient-files", method = RequestMethod.GET)
+    public List<FileMetaData> getPatientFiles(HttpServletRequest request) {
+        return fileManager.getAllPatientFiles(assembleUrl(request));
+    }
+
+    /**
+     * Loads the file from the file system and sends it to Vista.
+     *
+     * @param fileName the name of the file to send to Vista
+     * @return a Json object with success or failure
+     */
+    @RequestMapping(value = "/vista-export", method = RequestMethod.POST)
+    public ResponseEntity<VistaOhcResponse> vistaExport(@RequestParam(value = "fileName") String
+                                                                fileName) {
+        VistaOhcResponse response = new VistaOhcResponse();
+        if (fileName != null) {
+            try {
+                response = ehrClient.sendOneToVista(fileName);
+            } catch (Exception e) {
+                LOG.error("Error calling Vista", e);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    /**
+     * Retrieves the patient FHIR bundle and returns it to the caller
+     *
+     * @param fileName the file name of the bundle
+     * @return the FHIR bundle
+     */
+    @RequestMapping(value = "/patient", method = RequestMethod.GET)
+    public ResponseEntity<String> getPatient(@RequestParam("fileName") String fileName) {
+        String file = null;
+        try {
+            file = fileManager.getStringFromFile(fileName);
+        } catch (IOException e) {
+            LOG.error("Error getting file from file system.", e);
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(file, HttpStatus.OK);
+
+    }
+
+    protected String assembleUrl(HttpServletRequest request) {
+        String baseURl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        baseURl = baseURl + "/synthea/patient?fileName=";
+        return baseURl;
     }
 
     private String handleCookie(HttpServletRequest request, HttpServletResponse response) {
@@ -92,87 +171,6 @@ public class SyntheaController {
         return sessionId;
     }
 
-    /**
-     * @return
-     */
-    @RequestMapping(value = "/synthea-progress", method = RequestMethod.GET)
-    public Process syntheaProgress() {
-        Process process = new Process(ProcessType.SYNTHEA);
-        Iterable<Process> processes = processRepository.findAll();
-        if (processes.iterator().hasNext()) {
-            return processes.iterator().next();
-        } else {
-            return new Process();
-        }
-    }
-
-    /**
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/patient-files", method = RequestMethod.GET)
-    public List<FileMetaData> getPatientFiles(HttpServletRequest request) {
-        return fileManager.getAllPatientFiles(assembleUrl(request));
-    }
-
-    /**
-     * @param fileName
-     * @return
-     */
-    @RequestMapping(value = "/vista-export", method = RequestMethod.POST)
-    public ResponseEntity<VistaOhcResponse> vistaExport(@RequestParam(value = "fileName") String
-                                                                fileName) {
-        VistaOhcResponse response = new VistaOhcResponse();
-        if (fileName != null) {
-            try {
-                response = ehrClient.sendOneToVista(fileName);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * @param icn
-     * @return
-     */
-    @RequestMapping(value = "/ohc-export", method = RequestMethod.POST)
-    public ResponseEntity<VistaOhcResponse> ohcExport(@RequestParam(value = "icn") String icn) {
-        VistaOhcResponse response = new VistaOhcResponse();
-        if (icn != null) {
-            try {
-                response = ehrClient.ohcClient(icn);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    /**
-     * @param fileName
-     * @return
-     */
-    @RequestMapping(value = "/patient", method = RequestMethod.GET)
-    public ResponseEntity<String> getPatient(@RequestParam("fileName") String fileName) {
-        String file = null;
-        try {
-            file = fileManager.getStringFromFile(fileName);
-        } catch (IOException e) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(file, HttpStatus.OK);
-
-    }
-
-    protected String assembleUrl(HttpServletRequest request) {
-        String baseURl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        baseURl = baseURl + "/synthea/patient?fileName=";
-        return baseURl;
-    }
 
     private Cookie findCookie(Cookie[] cookies) {
         if (cookies != null) {
