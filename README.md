@@ -18,76 +18,45 @@ The Synthea code must be available on your machine. If you are running in a cont
 the base image.
 You will add the location of the output directories to the dhp-synthea-service properties file.
 
-
+This application only works on a *nix based operating system.  It will not run on Windows.
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-To run on your local machine's file system.
-
-```
-Give the example
-```
-
-And repeat
+Manual install
+Install Synthea on your local system
+update the following properties in the dhp-synteha-service application
 
 ```
-until finished
+//the root folder for your synthea install
+synthea.root=../synthea
+//output directory for Synthea.  This will be {synthea.root}/output
+synthea.root.output=../synthea/output
+//The FHIR directory where the patient files are output to. This will be {synthea.root.output}/fhir
+synthea.root.output.fhir=../synthea/output/fhir
+vista.url=https://someurl/addpatient
+server.port=8021
+origins.url=http://localhost:8080
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+run the following command to start the server
+```
+gradle clean bootRun
+```
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
+There are still not that many tests for this since it was started as a prototype.
 
 ```
-Give an example
+gradle test
 ```
 
-### And coding style tests
+## Deployment with Docker
 
-Explain what these tests test and why
+There is a different application.properties file for each environment.  They are named application-{env].properties.
+The appropriate env must be passed on the command line or it will default to dev.
 
 ```
-Give an example
+deploy.sh dev
 ```
 
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone who's code was used
-* Inspiration
-* etc
