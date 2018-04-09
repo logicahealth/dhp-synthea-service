@@ -54,7 +54,11 @@ gradle test
 ## Deployment with Docker
 
 There is a different application.properties file for each environment.  They are named application-{env].properties.
-The appropriate env must be passed on the command line or it will default to dev.
+The appropriate env must be passed on the command line or it will default to dev.  The docker-env.sh has the Docker port
+ mappings in it. As of this writing both the internal and external ports are 8021.
+
+ Note: The base image used in the Docker file is a custom image with Synthea installed on it.  You will need access to
+ the internet to download it.
 
 ```
 deploy.sh dev
