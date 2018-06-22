@@ -45,9 +45,6 @@ public class EhrClient {
     @Value("${vista.url}")
     private String vistaUrl;
 
-    @Value("${ohc.url}")
-    private String ohcUrl;
-
     public VistaOhcResponse sendAllToVista() throws Exception {
         VistaOhcResponse voResponse = new VistaOhcResponse();
         Path path = FileSystems.getDefault().getPath(syntheaOutput);
