@@ -1,6 +1,5 @@
 # dhp-synthea-service
 
-=======
 This project allows the [Synthea](https://github.com/synthetichealth/synthea "Synthea's GitHub") synthetic data creation
  tool be called through an web API.  Synthea is a multi-threaded java application so a quartz scheduler is used
   to kick off the process.
