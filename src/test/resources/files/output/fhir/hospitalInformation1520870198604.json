@@ -1,0 +1,236 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:eecba289-339c-4d94-b442-e89f33c64d6a",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "eecba289-339c-4d94-b442-e89f33c64d6a",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 175
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 81
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 23
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/bed-count-extension",
+            "valueInteger": 110
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "eecba289-339c-4d94-b442-e89f33c64d6a"
+          }
+        ],
+        "name": "FAIRLAWN REHABILITATION HOSPITAL",
+        "address": [
+          {
+            "line": [
+              "189 MAY STREET"
+            ],
+            "city": "Worcester",
+            "state": "MA",
+            "postalCode": "01602"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9a7e0759-02de-4b0b-afca-6c47c3868796",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "9a7e0759-02de-4b0b-afca-6c47c3868796",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 1
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/bed-count-extension",
+            "valueInteger": 74
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "9a7e0759-02de-4b0b-afca-6c47c3868796"
+          }
+        ],
+        "name": "SOUTHCOAST HOSPS GRP INC/TOBEY",
+        "address": [
+          {
+            "line": [
+              "43 HIGH STREET"
+            ],
+            "city": "Wareham",
+            "state": "MA",
+            "postalCode": "02571"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8c4e1a74-96c9-4cb6-90d6-e79cb1bc6856",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "8c4e1a74-96c9-4cb6-90d6-e79cb1bc6856",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 56
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 7
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 6
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/bed-count-extension",
+            "valueInteger": 0
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "8c4e1a74-96c9-4cb6-90d6-e79cb1bc6856"
+          }
+        ],
+        "name": "BOURNE HEALTH CENTER",
+        "address": [
+          {
+            "line": [
+              "1 TROWBRIDGE RD 1ST FL, SUITE"
+            ],
+            "city": "Bourne",
+            "state": "MA",
+            "postalCode": "02532"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2325d47f-be98-4b98-a4ce-f56d4208ef4d",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "2325d47f-be98-4b98-a4ce-f56d4208ef4d",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 6
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 2
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 3
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/bed-count-extension",
+            "valueInteger": 283
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "2325d47f-be98-4b98-a4ce-f56d4208ef4d"
+          }
+        ],
+        "name": "ST VINCENT HOSPITAL",
+        "address": [
+          {
+            "line": [
+              "123 SUMMER STREET"
+            ],
+            "city": "Worcester",
+            "state": "MA",
+            "postalCode": "01608"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:55a1fd79-eaa9-485e-ab97-118071dd71ab",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "55a1fd79-eaa9-485e-ab97-118071dd71ab",
+        "extension": [
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-encounters-extension",
+            "valueInteger": 189
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-procedures-extension",
+            "valueInteger": 318
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-labs-extension",
+            "valueInteger": 0
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/utilization-prescriptions-extension",
+            "valueInteger": 12
+          },
+          {
+            "url": "http://synthetichealth.github.io/synthea/bed-count-extension",
+            "valueInteger": 150
+          }
+        ],
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "55a1fd79-eaa9-485e-ab97-118071dd71ab"
+          }
+        ],
+        "name": "EMERSON HOSPITAL -",
+        "address": [
+          {
+            "line": [
+              "OLD ROAD TO NINE ACRE CORNER"
+            ],
+            "city": "Concord",
+            "state": "MA",
+            "postalCode": "01742"
+          }
+        ]
+      }
+    }
+  ]
+}
