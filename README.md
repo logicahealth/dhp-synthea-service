@@ -1,3 +1,4 @@
+
 # dhp-synthea-service
 
 This project allows the [Synthea](https://github.com/synthetichealth/synthea "Synthea's GitHub") synthetic data creation
@@ -63,4 +64,6 @@ The appropriate env must be passed on the command line or it will default to dev
 ```
 deploy.sh dev
 ```
+
+Created by [Perspecta](http://www.perspecta.com)
 
