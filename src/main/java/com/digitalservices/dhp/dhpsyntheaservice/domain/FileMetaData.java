@@ -20,6 +20,8 @@
 package com.digitalservices.dhp.dhpsyntheaservice.domain;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Represents the metadata for display and retrieval.
@@ -28,8 +30,10 @@ public class FileMetaData {
 
     private String patientName;
     private String fileName;
+    private Set<String> problems;
 
     public FileMetaData() {
+        this.problems =  new HashSet<String>();
     }
 
     public String getPatientName() {
@@ -47,6 +51,14 @@ public class FileMetaData {
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    public Set<String> getProblems() {
+        return this.problems;
+    }
+
+    public void setProblems(Set inProblems) {
+        this.problems.addAll(inProblems);
     }
 
     @Override
