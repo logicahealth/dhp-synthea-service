@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Enumerations;
 import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.dstu3.model.Condition;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Component
 public class FileManager {
@@ -51,11 +54,13 @@ public class FileManager {
                     continue;
                 }
                 FileMetaData fileMetaData = new FileMetaData();
+                Set<String> conditions = bundleFileToConditions(file);
                 fileMetaData.setFileName(file.getName());
                 String family = patient.getName().get(0).getFamily();
                 String given = patient.getName().get(0).getGiven().get(0).toString();
 
                 fileMetaData.setPatientName(given + " " + family);
+                fileMetaData.setProblems(conditions);
 
                 fileMetaDataList.add(fileMetaData);
             }
@@ -93,11 +98,27 @@ public class FileManager {
                     return new Patient();
                 }
                 return patient;
-
             }
         }
-
-
         return new Patient();
     }
+
+    private Set<String> bundleFileToConditions(File file) {
+
+        Bundle bundle = fileToBundle(file);
+        Set<String> returnList =  new HashSet<String>();
+        List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
+        for (Bundle.BundleEntryComponent entry : entries) {
+            if (Enumerations.FHIRAllTypes.CONDITION.getDisplay().equals(entry.getResource().fhirType())) {
+                Condition condition = (Condition) entry.getResource();
+                if (condition.getCode().getText() == null || condition.getCode().getText().isEmpty()) {
+                    continue;
+                }
+                // Ensure problem isn't in list already
+                returnList.add((String) condition.getCode().getText());
+            }
+        }
+        return returnList;
+    }
+
 }
