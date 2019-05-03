@@ -52,7 +52,7 @@ public class EhrClient {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
-                if (entry.toFile().getName().contains("hospital")) {
+                if (entry.toFile().getName().contains("Information")) {
                     continue;
                 }
                 voResponse = sendToVista(entry);

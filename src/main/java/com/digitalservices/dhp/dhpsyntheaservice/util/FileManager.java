@@ -2,7 +2,7 @@ package com.digitalservices.dhp.dhpsyntheaservice.util;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import com.digitalservices.dhp.dhpsyntheaservice.client.EhrClient;
+
 import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +49,8 @@ public class FileManager {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
                 File file = entry.toFile();
-                Patient patient = bundleFileToPatient(file);
+                Bundle bundle = fileToBundle(file);
+                Patient patient = bundleFileToPatient(bundle);
                 if (patient.isEmpty()) {
                     continue;
                 }
@@ -58,10 +59,11 @@ public class FileManager {
                 fileMetaData.setFileName(file.getName());
                 String family = patient.getName().get(0).getFamily();
                 String given = patient.getName().get(0).getGiven().get(0).toString();
-
+                
                 fileMetaData.setPatientName(given + " " + family);
                 fileMetaData.setProblems(conditions);
-
+                
+                fileMetaData.setResourceCount(bundle.getEntry().size());
                 fileMetaDataList.add(fileMetaData);
             }
         } catch (DirectoryIteratorException ex) {
@@ -87,9 +89,7 @@ public class FileManager {
         return bundle;
     }
 
-    private Patient bundleFileToPatient(File file) {
-
-        Bundle bundle = fileToBundle(file);
+    private Patient bundleFileToPatient(Bundle bundle) {
         List<Bundle.BundleEntryComponent> entries = bundle.getEntry();
         for (Bundle.BundleEntryComponent entry : entries) {
             if (Enumerations.FHIRAllTypes.PATIENT.getDisplay().equals(entry.getResource().fhirType())) {
