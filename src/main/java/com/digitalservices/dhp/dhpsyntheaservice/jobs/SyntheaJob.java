@@ -1,4 +1,3 @@
-/* Created by Perspecta http://www.perspecta.com */
 /*
         Licensed to the Apache Software Foundation (ASF) under one
         or more contributor license agreements.  See the NOTICE file
@@ -22,7 +21,6 @@ package com.digitalservices.dhp.dhpsyntheaservice.jobs;
 import com.digitalservices.dhp.dhpsyntheaservice.data.Process;
 import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
 
-import com.digitalservices.dhp.dhpsyntheaservice.util.FileManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -39,6 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  *
@@ -47,12 +46,6 @@ import java.util.Comparator;
 public class SyntheaJob extends QuartzJobBean {
     private static final Logger LOG = LogManager.getLogger(SyntheaJob.class);
 
-    @Value("${synthea.shell}")
-    private String command;
-    @Value("${synthea.arg1}")
-    private String arg1 = "run_synthea";
-    @Value("${synthea.arg2}")
-    private String arg2 = "-p";
     @Value("${synthea.root}")
     private String synthea;
     @Value("${synthea.root.output}")
@@ -60,38 +53,37 @@ public class SyntheaJob extends QuartzJobBean {
     @Value("${synthea.root.output.fhir}")
     private String syntheaOutputFhir;
 
-
-    private String population;
+    private List<String> command;
 
     @Autowired
     private ProcessRepository processRepository;
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-
+        Process processes = new Process();
+        processes.setRunning(true);
+        // processes.setClient(userDir);
+        processRepository.save(processes);
         File file = new File(synthea);
-        ProcessBuilder processBuilder = new ProcessBuilder(command, arg1, arg2, population).inheritIO()
-                .directory(file);
+        ProcessBuilder processBuilder = new ProcessBuilder(command).inheritIO().directory(file);
         Path path = Paths.get(syntheaOutputFhir);
         deleteFiles(path);
         try {
-            Process processes = new Process();
-            processes.setRunning(true);
-            //processes.setClient(userDir);
-            processRepository.save(processes);
             java.lang.Process process = processBuilder.start();
 
             process.waitFor();
-            //moveFiles();
+            // moveFiles();
             processRepository.deleteAll();
         } catch (IOException e) {
+            LOG.error(e);
             throw new JobExecutionException(e);
         } catch (InterruptedException e) {
             LOG.error(e);
+            throw new JobExecutionException(e);
         } finally {
             processRepository.deleteAll();
         }
-        LOG.info("building population " + population);
+        LOG.info("building patients with command " + command);
     }
 
     private void deleteFiles(Path path) {
@@ -99,28 +91,15 @@ public class SyntheaJob extends QuartzJobBean {
         LOG.info("deleted directory " + syntheaOutputFhir);
         if (Files.exists(path)) {
             try {
-                Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach
-                        (File::delete);
+                Files.walk(path).sorted(Comparator.reverseOrder()).filter(Files::isRegularFile).map(Path::toFile).forEach(File::delete);
             } catch (IOException e) {
                 LOG.error(e);
             }
         }
     }
 
-    private void moveFiles() {
-        Path path = Paths.get(syntheaOutputFhir);
-        Path newPath = Paths.get(syntheaOutput);
-        deleteFiles(newPath);
-        try {
-            LOG.info("copying from directory " + syntheaOutputFhir);
-            LOG.info("copying to  directory " + syntheaOutput);
-            Files.move(path, newPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            LOG.error(e);
-        }
+    public void setCommand(List<String> command) {
+        this.command = command;
     }
-
-    public void setPopulation(String population) {
-        this.population = population;
-    }
+    
 }

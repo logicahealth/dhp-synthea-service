@@ -30,10 +30,11 @@ public class FileMetaData {
 
     private String patientName;
     private String fileName;
+    private int resourceCount;
     private Set<String> problems;
 
     public FileMetaData() {
-        this.problems =  new HashSet<String>();
+        this.problems = new HashSet<String>();
     }
 
     public String getPatientName() {
@@ -52,12 +53,26 @@ public class FileMetaData {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
+    /**
+     * @return the resourceCount
+     */
+    public int getResourceCount() {
+        return resourceCount;
+    }
 
+    /**
+     * @param resourceCount the resourceCount to set
+     */
+    public void setResourceCount(int resourceCount) {
+        this.resourceCount = resourceCount;
+    }
+
+   
     public Set<String> getProblems() {
         return this.problems;
     }
 
-    public void setProblems(Set inProblems) {
+    public void setProblems(Set<String> inProblems) {
         this.problems.addAll(inProblems);
     }
 

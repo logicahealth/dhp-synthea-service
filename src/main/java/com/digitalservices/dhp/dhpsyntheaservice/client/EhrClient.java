@@ -1,4 +1,3 @@
-/* Created by Perspecta http://www.perspecta.com */
 /*
         Licensed to the Apache Software Foundation (ASF) under one
         or more contributor license agreements.  See the NOTICE file
@@ -52,7 +51,7 @@ public class EhrClient {
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(path, "*.{json}")) {
             for (Path entry : stream) {
-                if (entry.toFile().getName().contains("hospital")) {
+                if (entry.toFile().getName().contains("Information")) {
                     continue;
                 }
                 voResponse = sendToVista(entry);

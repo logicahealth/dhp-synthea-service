@@ -1,4 +1,4 @@
-FROM robcaruso/synthea:0
+FROM robcaruso/synthea:1
 ARG env
 ENV profile=${env}
 RUN echo "oh $profile"
