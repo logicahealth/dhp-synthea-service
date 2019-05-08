@@ -1,16 +1,12 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+		springBootVersion = '2.1.2.RELEASE'
 	}
 	repositories {
 		mavenCentral()
-		maven { url "https://repo.spring.io/snapshot" }
-		maven { url "https://repo.spring.io/milestone" }
-        maven { url "https://plugins.gradle.org/m2/"}
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2")
 	}
 }
 
@@ -19,32 +15,29 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.palantir.docker'
 
 group = 'com.digitalservices.dhp'
+archivesBaseName = "dhp-synthea-service"
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = 1.8
+sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
-	maven { url "https://repo.spring.io/snapshot" }
-	maven { url "https://repo.spring.io/milestone" }
 }
 
-def simonVersion = '4.1.0'
-
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-data-rest')
-	compile('org.springframework.boot:spring-boot-starter-quartz')
-	compile('org.springframework.boot:spring-boot-starter-web')
-    compile 'com.google.code.gson:gson:2.8.2'
-    compile 'ca.uhn.hapi.fhir:hapi-fhir-base:3.1.0'
-    compile 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.1.0'
-    compile group: 'org.javasimon', name: 'javasimon-core',  version: simonVersion
-    compile group: 'org.javasimon', name: 'javasimon-console-embed',  version: simonVersion
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'com.h2database:h2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	runtime('org.springframework.boot:spring-boot-devtools')
-	runtime('com.h2database:h2')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-base:3.1.0'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.1.0'
+	implementation 'io.springfox:springfox-swagger2:2.9.2'
+	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+	
 }

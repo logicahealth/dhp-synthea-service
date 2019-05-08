@@ -1,4 +1,3 @@
-/* Created by Perspecta http://www.perspecta.com */
 /*
         Licensed to the Apache Software Foundation (ASF) under one
         or more contributor license agreements.  See the NOTICE file
@@ -24,6 +23,7 @@ import com.digitalservices.dhp.dhpsyntheaservice.client.EhrClient;
 import com.digitalservices.dhp.dhpsyntheaservice.data.Process;
 import com.digitalservices.dhp.dhpsyntheaservice.data.ProcessRepository;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
+import com.digitalservices.dhp.dhpsyntheaservice.domain.SyntheaCommand;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.SyntheaResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.VistaOhcResponse;
 import com.digitalservices.dhp.dhpsyntheaservice.util.FileManager;
@@ -48,7 +48,6 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-
 @RestController
 @RequestMapping("synthea")
 public class SyntheaController {
@@ -72,22 +71,30 @@ public class SyntheaController {
     private EhrClient ehrClient;
 
     /**
-     * Kicks off the Synthea Quartz job.  The job then creates patients and saves the files to the files
-     * system.
+     * Kicks off the Synthea Quartz job. The job then creates patients and saves the
+     * files to the files system.
      *
      * @param population the number of patient files synthea should create
      * @return A Json object that tells the caller that the process has started
      */
     @RequestMapping(value = "/synthea-run", method = RequestMethod.GET)
-    public ResponseEntity<SyntheaResponse> syntheaRun(@RequestParam String population) {
-        //String userDir = handleCookie(request, response);
+    public ResponseEntity<SyntheaResponse> syntheaRun(@RequestParam String population,
+            @RequestParam(required = false) String seed, @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String ageRange, @RequestParam(required = false) String overflowPopulation,
+            @RequestParam(required = false) String modules, @RequestParam(required = false) String state,
+            @RequestParam(required = false) String city) {
+        // String userDir = handleCookie(request, response);
         ResponseEntity<SyntheaResponse> responseEntity;
         SyntheaResponse syntheaResponse = new SyntheaResponse(false);
+        SyntheaCommand options = new SyntheaCommand(population, seed, gender, ageRange, overflowPopulation, modules,
+                state, city);
         Iterable<Process> processes = processRepository.findAll();
         if (!processes.iterator().hasNext()) {
             try {
                 JobDataMap jobDataMap = new JobDataMap();
-                jobDataMap.put("population", population);
+                System.out.println("------------------");
+                System.out.println(options.createOptionsString());
+                jobDataMap.put("command", options.createOptionsString());
                 scheduler.triggerJob(syntheaJobDetail.getKey(), jobDataMap);
                 syntheaResponse = new SyntheaResponse(true);
             } catch (SchedulerException e) {
@@ -101,15 +108,14 @@ public class SyntheaController {
         return responseEntity;
     }
 
-
     /**
-     * Called by the caller to check on the progress of the synthea job that was created.
+     * Called by the caller to check on the progress of the synthea job that was
+     * created.
      *
      * @return a Json object that tells the caller if the job is running
      */
     @RequestMapping(value = "/synthea-progress", method = RequestMethod.GET)
     public Process syntheaProgress() {
-        Process process = new Process();
         Iterable<Process> processes = processRepository.findAll();
         if (processes.iterator().hasNext()) {
             return processes.iterator().next();
@@ -119,8 +125,8 @@ public class SyntheaController {
     }
 
     /**
-     * Returns information about the files created by Synthea. So that he individual files can be
-     * retrieved by the caller.
+     * Returns information about the files created by Synthea. So that he individual
+     * files can be retrieved by the caller.
      *
      * @param request the HttpServletRequest
      * @return a list of metadata about the files
@@ -137,8 +143,7 @@ public class SyntheaController {
      * @return a Json object with success or failure
      */
     @RequestMapping(value = "/vista-export", method = RequestMethod.POST)
-    public ResponseEntity<VistaOhcResponse> vistaExport(@RequestParam(value = "fileName") String
-                                                                fileName) {
+    public ResponseEntity<VistaOhcResponse> vistaExport(@RequestParam(value = "fileName") String fileName) {
         VistaOhcResponse response = new VistaOhcResponse();
         if (fileName != null) {
             try {
@@ -150,7 +155,6 @@ public class SyntheaController {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
     /**
      * Retrieves the patient FHIR bundle and returns it to the caller
@@ -190,7 +194,6 @@ public class SyntheaController {
         response.addCookie(cookie);
         return sessionId;
     }
-
 
     private Cookie findCookie(Cookie[] cookies) {
         if (cookies != null) {
