@@ -40,6 +40,8 @@ public class SyntheaCommand {
         List<String> options = new ArrayList<>();
         options.add("/bin/sh");
         options.add("run_synthea");
+        options.add("--exporter.fhir_stu3.export");
+        options.add("true");
         if (this.populationSize != null && !this.populationSize.trim().isEmpty()) {
             options.add(POPULATION);
             options.add(this.populationSize);
