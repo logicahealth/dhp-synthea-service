@@ -1,6 +1,6 @@
 FROM robcaruso/synthea:1
 ARG env
-RUN apt update && apt install -y gradle
+RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y gradle
 ENV profile=${env}
 WORKDIR /service
 COPY . /service
