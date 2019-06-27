@@ -1,7 +1,9 @@
 FROM robcaruso/synthea:1
 ARG env
+RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y gradle
 ENV profile=${env}
-RUN echo "oh $profile"
-VOLUME /tmp
-ADD build/libs/dhp-synthea-service-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=${profile}","-jar","app.jar"]
+WORKDIR /service
+COPY . /service
+RUN sed -i 's/vista.url\=/vista.url\=http\:\/\/vista\:9080\/addpatient/' /service/src/main/resources/application.properties
+EXPOSE 8021
+ENTRYPOINT cd /service && ./gradlew clean bootRun
