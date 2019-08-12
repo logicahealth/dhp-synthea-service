@@ -6,10 +6,10 @@ import ca.uhn.fhir.parser.IParser;
 import com.digitalservices.dhp.dhpsyntheaservice.domain.FileMetaData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hl7.fhir.dstu3.model.Bundle;
-import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.Patient;
-import org.hl7.fhir.dstu3.model.Condition;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Enumerations;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Condition;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -83,7 +83,7 @@ public class FileManager {
             LOG.error(e);
             return new Bundle();
         }
-        FhirContext fhirContext = FhirContext.forDstu3();
+        FhirContext fhirContext = FhirContext.forR4();
         IParser parser = fhirContext.newJsonParser();
         Bundle bundle = parser.parseResource(Bundle.class, fileReader);
         return bundle;
