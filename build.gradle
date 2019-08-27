@@ -35,8 +35,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     implementation 'com.google.code.gson:gson:2.8.2'
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-base:3.1.0'
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-dstu3:3.1.0'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-base:3.8.0'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:3.8.0'
 	implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	
