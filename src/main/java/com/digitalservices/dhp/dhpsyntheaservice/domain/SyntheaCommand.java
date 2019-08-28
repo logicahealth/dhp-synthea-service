@@ -14,17 +14,19 @@ public class SyntheaCommand {
     private static String AGE_RANGE = "-a";
     private static String OVERFLOW_POPULATION = "-o";
     private static String MODULES = "-m";
+    private static String YEARSOFDATA = "--exporter.years_of_history";
 
     private String populationSize;
     private String seed;
     private String gender;
     private String ageRange;
+    private String yearsOfData;
     private String overflowPopulation;
     private String modules;
     private String state;
     private String city;
 
-    public SyntheaCommand(String populationSize, String seed, String gender, String ageRange, String overflowPopulation,
+    public SyntheaCommand(String populationSize, String seed, String gender, String ageRange, String yearsOfData, String overflowPopulation,
             String modules, String state, String city) {
         this.populationSize = populationSize;
         this.seed = seed;
@@ -32,6 +34,7 @@ public class SyntheaCommand {
         this.ageRange = ageRange;
         this.overflowPopulation = overflowPopulation;
         this.modules = modules;
+        this.yearsOfData = yearsOfData;
         this.state = state;
         this.city = city;
     }
@@ -55,6 +58,10 @@ public class SyntheaCommand {
         if (this.ageRange != null && !this.ageRange.trim().isEmpty()) {
             options.add(AGE_RANGE);
             options.add(this.ageRange);
+        }
+        if (this.yearsOfData != null && !this.yearsOfData.trim().isEmpty()) {
+            options.add(YEARSOFDATA);
+            options.add(this.yearsOfData);
         }
         if (this.overflowPopulation != null && !this.overflowPopulation.trim().isEmpty()) {
             options.add(OVERFLOW_POPULATION);

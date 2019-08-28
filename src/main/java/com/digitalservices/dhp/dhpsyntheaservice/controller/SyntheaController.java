@@ -80,13 +80,13 @@ public class SyntheaController {
     @RequestMapping(value = "/synthea-run", method = RequestMethod.GET)
     public ResponseEntity<SyntheaResponse> syntheaRun(@RequestParam String population,
             @RequestParam(required = false) String seed, @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String ageRange, @RequestParam(required = false) String overflowPopulation,
-            @RequestParam(required = false) String modules, @RequestParam(required = false) String state,
-            @RequestParam(required = false) String city) {
+            @RequestParam(required = false) String ageRange, @RequestParam(required = false) String yearsOfData,
+            @RequestParam(required = false) String overflowPopulation, @RequestParam(required = false) String modules,
+            @RequestParam(required = false) String state, @RequestParam(required = false) String city) {
         // String userDir = handleCookie(request, response);
         ResponseEntity<SyntheaResponse> responseEntity;
         SyntheaResponse syntheaResponse = new SyntheaResponse(false);
-        SyntheaCommand options = new SyntheaCommand(population, seed, gender, ageRange, overflowPopulation, modules,
+        SyntheaCommand options = new SyntheaCommand(population, seed, gender, ageRange, yearsOfData, overflowPopulation, modules,
                 state, city);
         Iterable<Process> processes = processRepository.findAll();
         if (!processes.iterator().hasNext()) {
