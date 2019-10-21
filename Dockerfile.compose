@@ -1,4 +1,4 @@
-FROM robcaruso/synthea:1
+FROM osehra/synthea
 ARG env
 RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y gradle
 ENV profile=${env}
